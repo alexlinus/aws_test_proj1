@@ -14,6 +14,11 @@ sqs = boto3.client('sqs', region_name="us-east-1")
 conn = psycopg2.connect(**get_db_config(), )
 
 
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "Hello from flask!"})
+
+
 @app.route("/task", methods=["POST"])
 def create_task():
     task_id = str(uuid4())
@@ -25,6 +30,7 @@ def create_task():
 
     sqs.send_message(QueueUrl=TO_PROCESS_TASK_QUEUE_URL, MessageBody=task_id)
     return jsonify({"task_id": task_id, "status": "pending"})
+
 
 
 if __name__ == '__main__':
